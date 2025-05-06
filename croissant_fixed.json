@@ -94,7 +94,7 @@
       "includes": "sensor_data/gt_edge_data_*-221014-from8to9.csv"
     }
   ],
-  "recordSet": [
+  "recordSets": [
     {
       "@type": "cr:RecordSet",
       "@id": "xml",
@@ -129,9 +129,11 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transform": {
-              "regex": "network/(network1_SF_.*?)/.*"
-            }
+            "transforms": [
+              {
+                "regex": "network/(network1_SF_.*?)/.*"
+              }
+            ]
           }
         },
         {
@@ -147,9 +149,11 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transform": {
-              "regex": "(additional|net|od|taz)\\.xml"
-            }
+            "transforms": [
+              {
+                "regex": "(additional|net|od|taz)\\.xml"
+              }
+            ]
           }
         }
       ]
@@ -263,9 +267,11 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transform": {
-              "regex": "network/(network1_SF_.*?)/.*"
-            }
+            "transforms": [
+              {
+                "regex": "network/(network1_SF_.*?)/.*"
+              }
+            ]
           }
         }
       ]
@@ -318,9 +324,11 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transform": {
-              "regex": "gt_edge_data_(.*)-221014-from8to9\\.csv"
-            }
+            "transforms": [
+              {
+                "regex": "gt_edge_data_(.*)-221014-from8to9\\.csv"
+              }
+            ]
           }
         }
       ]
