@@ -1,0 +1,278 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "BO Benchmark Dataset",
+  "description": "This dataset contains four synthetic traffic networks modeled in SUMO along with corresponding vehicle flow measurements from virtual sensors. Each network has its own configuration files (network, OD, TAZ, etc.), and each has a matching CSV file listing vehicle flows on sensor-equipped edges.",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "url": "https://github.com/TrafficSimBenchmark/dataset",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "bo-benchmark-repo",
+      "name": "BO Benchmark Repository",
+      "description": "GitHub repository containing SUMO network files and sensor measurements for Bayesian Optimization benchmarks.",
+      "contentUrl": "https://github.com/TrafficSimBenchmark/dataset",
+      "encodingFormat": "git+https",
+      "sha256": "main"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "network-files",
+      "name": "Network Files",
+      "description": "Each subfolder under 'network/' contains SUMO XML/CSV files for one specific traffic network.",
+      "containedIn": {
+        "@id": "bo-benchmark-repo"
+      },
+      "encodingFormat": [
+        "application/xml",
+        "text/csv"
+      ],
+      "includes": "network/network1_SF_*/{additional.xml,net.xml,od.xml,routes.csv,taz.xml}"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "sensor-csv-files",
+      "name": "Sensor Data Files",
+      "description": "Sensor ground-truth vehicle flow data for each network, stored as edge-wise CSV files.",
+      "containedIn": {
+        "@id": "bo-benchmark-repo"
+      },
+      "encodingFormat": "text/csv",
+      "includes": "sensor_data/gt_edge_data_*.csv"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "sensor-1ramp",
+      "name": "gt_edge_data_1ramp-221014-from8to9.csv",
+      "description": "Sensor flow data for network 1ramp.",
+      "contentUrl": "https://github.com/TrafficSimBenchmark/dataset/raw/main/sensor_data/gt_edge_data_1ramp-221014-from8to9.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "79b955e6749c113566ce7eaca467ab76de46482b3edc7e855b17b2eee35a07f6"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "sensor-2corridor",
+      "name": "gt_edge_data_2corridor-221014-from8to9.csv",
+      "description": "Sensor flow data for network 2corridor.",
+      "contentUrl": "https://github.com/TrafficSimBenchmark/dataset/raw/main/sensor_data/gt_edge_data_2corridor-221014-from8to9.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "31f281bb177ced3c2a54c92a83090e9bf8ac938032ccb2c99796ad97e785382a"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "sensor-3junction",
+      "name": "gt_edge_data_3junction-221014-from8to9.csv",
+      "description": "Sensor flow data for network 3junction.",
+      "contentUrl": "https://github.com/TrafficSimBenchmark/dataset/raw/main/sensor_data/gt_edge_data_3junction-221014-from8to9.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "fabe508348d92484199ff9a90c191b26396b9272fed6910adadba8c2cd0399b0"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "sensor-4smallRegion",
+      "name": "gt_edge_data_4smallRegion-221014-from8to9.csv",
+      "description": "Sensor flow data for network 4smallRegion.",
+      "contentUrl": "https://github.com/TrafficSimBenchmark/dataset/raw/main/sensor_data/gt_edge_data_4smallRegion-221014-from8to9.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "811d35019e484d0b5eee2d2280041c5a0f436f7082055b2d3f3e3d7c9c277ade"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "sensor-records-1ramp",
+      "name": "Sensor Records - 1ramp",
+      "description": "Sensor vehicle flow data for network 1ramp.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "1ramp-edge-id",
+          "name": "edge_id",
+          "description": "Edge ID where the sensor is located in the SUMO network.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-1ramp"
+            },
+            "extract": {
+              "column": "edge_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "1ramp-flow",
+          "name": "interval_nVehContrib",
+          "description": "Number of vehicles that passed the sensor on this edge during the interval.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-1ramp"
+            },
+            "extract": {
+              "column": "interval_nVehContrib"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "sensor-records-2corridor",
+      "name": "Sensor Records - 2corridor",
+      "description": "Sensor vehicle flow data for network 2corridor.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "2corridor-edge-id",
+          "name": "edge_id",
+          "description": "Edge ID where the sensor is located in the SUMO network.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-2corridor"
+            },
+            "extract": {
+              "column": "edge_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "2corridor-flow",
+          "name": "interval_nVehContrib",
+          "description": "Number of vehicles that passed the sensor on this edge during the interval.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-2corridor"
+            },
+            "extract": {
+              "column": "interval_nVehContrib"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "sensor-records-3junction",
+      "name": "Sensor Records - 3junction",
+      "description": "Sensor vehicle flow data for network 3junction.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "3junction-edge-id",
+          "name": "edge_id",
+          "description": "Edge ID where the sensor is located in the SUMO network.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-3junction"
+            },
+            "extract": {
+              "column": "edge_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "3junction-flow",
+          "name": "interval_nVehContrib",
+          "description": "Number of vehicles that passed the sensor on this edge during the interval.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-3junction"
+            },
+            "extract": {
+              "column": "interval_nVehContrib"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "sensor-records-4smallRegion",
+      "name": "Sensor Records - 4smallRegion",
+      "description": "Sensor vehicle flow data for network 4smallRegion.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "4smallRegion-edge-id",
+          "name": "edge_id",
+          "description": "Edge ID where the sensor is located in the SUMO network.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-4smallRegion"
+            },
+            "extract": {
+              "column": "edge_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "4smallRegion-flow",
+          "name": "interval_nVehContrib",
+          "description": "Number of vehicles that passed the sensor on this edge during the interval.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "sensor-4smallRegion"
+            },
+            "extract": {
+              "column": "interval_nVehContrib"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
