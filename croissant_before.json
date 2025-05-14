@@ -33,7 +33,7 @@
     "md5": "cr:md5",
     "parentField": "cr:parentField",
     "path": "cr:path",
-    "recordSets": "cr:recordSet",
+    "recordSet": "cr:recordSet",
     "references": "cr:references",
     "regex": "cr:regex",
     "repeated": "cr:repeated",
@@ -69,18 +69,18 @@
         "@id": "github-repository"
       },
       "encodingFormat": "application/xml",
-      "includes": "network/network1_SF_*/{additional.xml,net.xml,od.xml,taz.xml}"
+      "includes": "network/network_*/{additional.xml,net.xml,od.xml,taz.xml}"
     },
     {
       "@type": "cr:FileSet",
       "@id": "csv-routes-files",
       "name": "csv-routes-files",
-      "description": "Each subfolder under 'network/' contains routes CSV files for one specific traffic network.",
+      "description": "Each subfolder under 'network/' contains routes CSV files for one specific traffic network. Single route files has only one pair from TAZ to TAZ, while multiple route files has multiple pairs from TAZ to TAZ.",
       "containedIn": {
         "@id": "github-repository"
       },
       "encodingFormat": "text/csv",
-      "includes": "network/network1_SF_*/routes.csv"
+      "includes": "network/network_*/{routes_single.csv, routes_multiple.csv}"
     },
     {
       "@type": "cr:FileSet",
@@ -91,7 +91,7 @@
         "@id": "github-repository"
       },
       "encodingFormat": "text/csv",
-      "includes": "sensor_data/gt_edge_data_*-221014-from8to9.csv"
+      "includes": "sensor_data/2210*/gt_link_data_*.csv"
     }
   ],
   "recordSet": [
@@ -99,7 +99,7 @@
       "@type": "cr:RecordSet",
       "@id": "xml",
       "name": "xml",
-      "description": "Metadata about SUMO network-related XML files (net, taz, additional, rou).",
+      "description": "Metadata about SUMO network-related XML files (net, taz, additional).",
       "field": [
         {
           "@type": "cr:Field",
@@ -118,8 +118,8 @@
         },
         {
           "@type": "cr:Field",
-          "@id": "xml/file_name",
-          "name": "file_name",
+          "@id": "xml/network_name",
+          "name": "network_name",
           "description": "Traffic network name inferred from folder structure.",
           "dataType": "sc:Text",
           "source": {
@@ -129,8 +129,8 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transforms": {
-              "regex": "network/(network1_SF_.*?)/.*"
+            "transform": {
+              "regex": "network/(network_.*?)/.*"
             }
           }
         },
@@ -147,7 +147,7 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transforms": {
+            "transform": {
               "regex": "(additional|net|od|taz)\\.xml"
             }
           }
@@ -156,13 +156,13 @@
     },
     {
       "@type": "cr:RecordSet",
-      "@id": "csv_routes",
-      "name": "csv_routes",
+      "@id": "csv_routes_single",
+      "name": "csv_routes_single",
       "description": "Vehicle route definitions per traffic network.",
       "field": [
         {
           "@type": "cr:Field",
-          "@id": "csv_routes/fromTaz",
+          "@id": "csv_routes_single/fromTaz",
           "name": "fromTaz",
           "description": "Origin TAZ ID.",
           "dataType": "sc:Text",
@@ -177,7 +177,7 @@
         },
         {
           "@type": "cr:Field",
-          "@id": "csv_routes/toTaz",
+          "@id": "csv_routes_single/toTaz",
           "name": "toTaz",
           "description": "Destination TAZ ID.",
           "dataType": "sc:Text",
@@ -192,7 +192,7 @@
         },
         {
           "@type": "cr:Field",
-          "@id": "csv_routes/route_edges",
+          "@id": "csv_routes_single/route_edges",
           "name": "route_edges",
           "description": "Route edges assigned to the vehicle.",
           "dataType": "sc:Text",
@@ -207,22 +207,7 @@
         },
         {
           "@type": "cr:Field",
-          "@id": "csv_routes/id",
-          "name": "id",
-          "description": "Unique vehicle ID.",
-          "dataType": "sc:Text",
-          "source": {
-            "fileSet": {
-              "@id": "csv-routes-files"
-            },
-            "extract": {
-              "column": "id"
-            }
-          }
-        },
-        {
-          "@type": "cr:Field",
-          "@id": "csv_routes/start_edge",
+          "@id": "csv_routes_single/start_edge",
           "name": "start_edge",
           "description": "Starting edge of the route.",
           "dataType": "sc:Text",
@@ -237,7 +222,7 @@
         },
         {
           "@type": "cr:Field",
-          "@id": "csv_routes/last_edge",
+          "@id": "csv_routes_single/last_edge",
           "name": "last_edge",
           "description": "Ending edge of the route.",
           "dataType": "sc:Text",
@@ -252,7 +237,7 @@
         },
         {
           "@type": "cr:Field",
-          "@id": "csv_routes/network_name",
+          "@id": "csv_routes_single/network_name",
           "name": "network_name",
           "description": "Network name inferred from folder path.",
           "dataType": "sc:Text",
@@ -263,8 +248,139 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "s": {
-              "regex": "network/(network1_SF_.*?)/.*"
+            "transform": {
+              "regex": "network_(.*?)/"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "csv_routes_multiple",
+      "name": "csv_routes_multiple",
+      "description": "Multiple route definitions with ratios for each TAZ pair in each network.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/fromTaz",
+          "name": "fromTaz",
+          "description": "Origin TAZ ID.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "fromTaz"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/toTaz",
+          "name": "toTaz",
+          "description": "Destination TAZ ID.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "toTaz"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/route_idx",
+          "name": "route_idx",
+          "description": "Index of the route within same TAZ pair.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "route_idx"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/ratio",
+          "name": "ratio",
+          "description": "Ratio of the route within same TAZ pair.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "ratio"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/route_edges",
+          "name": "route_edges",
+          "description": "Route edges assigned to the vehicle.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "route_edges"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/start_edge",
+          "name": "start_edge",
+          "description": "Starting edge of the route.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "start_edge"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/last_edge",
+          "name": "last_edge",
+          "description": "Ending edge of the route.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "column": "last_edge"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "csv_routes_multiple/network_name",
+          "name": "network_name",
+          "description": "Network name inferred from folder path.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileSet": {
+              "@id": "csv-routes-files"
+            },
+            "extract": {
+              "fileProperty": "filename"
+            },
+            "transform": {
+              "regex": "network_(.*?)/"
             }
           }
         }
@@ -277,8 +393,8 @@
       "field": [
         {
           "@type": "cr:Field",
-          "@id": "csv_sensor/edge_id",
-          "name": "edge_id",
+          "@id": "csv_sensor/link_id",
+          "name": "link_id",
           "description": "Edge ID where the sensor is located in the SUMO network.",
           "dataType": "sc:Text",
           "source": {
@@ -286,7 +402,7 @@
               "@id": "csv-sensor-files"
             },
             "extract": {
-              "column": "edge_id"
+              "column": "link_id"
             }
           }
         },
@@ -318,8 +434,8 @@
             "extract": {
               "fileProperty": "filename"
             },
-            "transforms": {
-              "regex": "gt_edge_data_(.*)-221014-from8to9\\.csv"
+            "transform": {
+              "regex": "gt_link_data_(.*?)_\\d{6}_\\d{2}-\\d{2}\\.csv"
             }
           }
         }
